@@ -1,5 +1,8 @@
-set nocompatible	" Use Vim defaults (much better!)
-set bs=indent,eol,start		" allow backspacing over everything in insert mode
+" better safe than sorry
+set nocompatible
+" allow backspacing over everything in insert mode
+set bs=indent,eol,start
+" search while typing
 set incsearch
 
 " set tab to 2 spaces
@@ -24,7 +27,7 @@ Plug 'tpope/vim-abolish'
 " OpenGL syntax
 Plug 'beyondmarc/opengl.vim'
 
-" clang format from C++
+" clang format for C++
 Plug 'rhysd/vim-clang-format'
 
 " all we need for GO
@@ -41,6 +44,9 @@ nnoremap <C-g>g :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
 nnoremap <C-f>l :BLines<CR>
 nnoremap <C-p> :Files<CR>
+
+" Async linter
+Plug 'w0rp/ale'
 
 " Initialize plugin system
 call plug#end()
