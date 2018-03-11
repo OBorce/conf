@@ -4,6 +4,10 @@ set nocompatible
 set bs=indent,eol,start
 " search while typing
 set incsearch
+" ignore case of search
+set ignorecase
+" but use smart case
+set smartcase
 
 " set tab to 2 spaces
 set tabstop=2
