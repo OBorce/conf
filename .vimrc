@@ -16,6 +16,13 @@ set shiftwidth=2
 " expand tab to spaces
 set expandtab
 
+" recursive gf, i.e. path is path + all subpaths
+set path=$PWD/**
+
+" some timeout preventing us from doing:
+" insert mode -> Esc and ^O very fast
+set timeoutlen=100
+
 call plug#begin('~/.vim/plugged')
 
 " our plugins
@@ -25,7 +32,7 @@ Plug 'vim-airline/vim-airline'
 " show airline when only one pane
 set laststatus=2
 
-" replace multiple variants of a word e.g. foo, FOO, Foo with bar, BAR, Bar
+" using %S/foo/bar to replace multiple variants of a word e.g. foo, FOO, Foo with bar, BAR, Bar
 Plug 'tpope/vim-abolish'
 
 " OpenGL syntax
@@ -35,10 +42,12 @@ Plug 'beyondmarc/opengl.vim'
 Plug 'rhysd/vim-clang-format'
 
 " all we need for GO
-Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+"Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
 
 " TypeScript syntax
 Plug 'leafgarland/typescript-vim'
+
+autocmd FileType typescript :set makeprg=tsc
 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -52,6 +61,36 @@ nnoremap <C-p> :Files<CR>
 " Async linter
 Plug 'w0rp/ale'
 
+let g:ale_c_build_dir = $PWD . '/build'
+
+" Set C++ ale compiler flags
+let g:ale_linters = {'cpp': ['g++']}
+" get our include libs
+let paths = split(globpath('/usr/local/include', '*'), '\n')
+
+" get our extern include libs
+let extern = split(globpath($PWD . '/extern', '*'), '\n')
+let extern_include = split(globpath($PWD . '/extern', '*/include'), '\n')
+
+let paths = paths + extern + extern_include
+
+" standard options and include current dir
+let compile_options = '-std=c++2a -Wall -Wextra -I' . $PWD
+" if we have libs added, add them to the include paths
+if len(paths)
+  let compile_options = compile_options . ' -I' . join(paths, ' -I')
+endif
+
+let gcc_extras = ' -Wcast-qual -Wconversion-null
+\ -Woverlength-strings -Wpointer-arith -Wunused-local-typedefs -Wunused-result
+\ -Wvarargs -Wvla -Wwrite-strings
+\ -Wno-parentheses' "some boost complaints
+
+let clang_extras = ' '
+
+let g:ale_cpp_clang_options = compile_options . clang_extras
+let g:ale_cpp_gcc_options = compile_options . gcc_extras
+
 " Initialize plugin system
 call plug#end()
 
@@ -60,5 +99,3 @@ au FileType html setl sw=2 sts=2 et
 filetype plugin indent on
 
 colorscheme wombat256
-
-set path=$PWD/**
